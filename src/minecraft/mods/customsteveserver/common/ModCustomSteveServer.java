@@ -3,7 +3,11 @@ package mods.customsteveserver.common;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.logging.Logger;
+
+import com.google.common.eventbus.Subscribe;
+import com.google.common.eventbus.EventBus;
 
 import mods.customsteveserver.utils.ConfigLoader;
 import mods.customsteveserver.utils.ConfigProp;
@@ -14,26 +18,40 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraftforge.common.MinecraftForge;
+import cpw.mods.fml.common.DummyModContainer;
+import cpw.mods.fml.common.LoadController;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.Instance;
+import cpw.mods.fml.common.ModMetadata;
 import cpw.mods.fml.common.SidedProxy;
+import cpw.mods.fml.common.event.FMLConstructionEvent;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
+import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.network.NetworkMod;
 import cpw.mods.fml.common.registry.EntityRegistry;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 
-@Mod(modid = "CustomSteeveServer", name = "Custom Steeve Server", version = "1.0", acceptedMinecraftVersions = "1.6.4")
-@NetworkMod(clientSideRequired = true, serverSideRequired = false)
-public class ModCustomSteveServer {
+public class ModCustomSteveServer extends DummyModContainer {
 	
-	@Instance("ModCustomSteeveServer")
-	public static ModCustomSteveServer instance;
-	
-	@SidedProxy(clientSide = "mods.customsteveserver.common.ClientProxyCustomSteveServer", serverSide = "mods.customsteveserver.common.CommonProxyCustomSteveServer")
-	public static CommonProxyCustomSteveServer proxy;
+	public ModCustomSteveServer() {
+
+		super(new ModMetadata());
+		ModMetadata meta = getMetadata();
+		meta.modId = "CustomSteveServer";
+		meta.name = "Custom Steve Server";
+		meta.version = "1.0"; //String.format("%d.%d.%d.%d", majorVersion, minorVersion, revisionVersion, buildVersion);
+		meta.credits = "";
+		meta.authorList = Arrays.asList("Smeagol");
+		meta.description = "";
+		meta.url = "";
+		meta.updateUrl = "";
+		meta.screenshots = new String[0];
+		meta.logoFile = "";
+
+	}
 	
 	@ConfigProp (info = "Display version checker message")
 	public static boolean versionChecker = true;
@@ -48,33 +66,34 @@ public class ModCustomSteveServer {
 	public static Logger log;
 	
 	
-	/**
-	 * 1
-	 */
-	@EventHandler
-	public void preInit(FMLPreInitializationEvent event) {
+	@Override
+	public boolean registerBus(EventBus bus, LoadController controller) {
+		bus.register(this);
+		return true;
+	}
+
+	@Subscribe
+	public void modConstruction(FMLConstructionEvent evt){
+
+	}
+
+	@Subscribe
+	public void init(FMLInitializationEvent evt) {
+
+	}
+
+	@Subscribe
+	public void preInit(FMLPreInitializationEvent evt) {
 		// Creation du logger
-		log = event.getModLog();
+		log = evt.getModLog();
 		
-		ConfigLoader configLoader = new ConfigLoader(this.getClass(), event);
+		ConfigLoader configLoader = new ConfigLoader(this.getClass(), evt);
 		configLoader.loadConfig();
-		
 	}
-	
-	/**
-	 * 2 
-	 * @throws IOException
-	 * **/
-	@EventHandler
-	public void load(FMLInitializationEvent event) throws Exception {
-		
-		// Execution du renderer en fonction du serveur ou du client
-		proxy.registerRenderers();
-		
-		// Creation du checker de version
-		VersionChecker.getInstance(this.versionChecker).check(this);
-		
-		
+
+	@Subscribe
+	public void postInit(FMLPostInitializationEvent evt) {
+
 	}
-	
+
 }
