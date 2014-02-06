@@ -4,13 +4,13 @@ import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.logging.Logger;
 
 import com.google.common.eventbus.Subscribe;
 import com.google.common.eventbus.EventBus;
 
 import mods.customsteveserver.utils.ConfigLoader;
 import mods.customsteveserver.utils.ConfigProp;
+import mods.customsteveserver.utils.Logger;
 import mods.customsteveserver.utils.VersionChecker;
 import net.minecraft.block.Block;
 import net.minecraft.entity.EnumCreatureType;
@@ -52,9 +52,12 @@ public class ModCustomSteveServer extends DummyModContainer {
 		meta.logoFile = "";
 
 	}
-	
+
 	@ConfigProp (info = "Display version checker message")
 	public static boolean versionChecker = true;
+
+	@ConfigProp (info = "Log display level (INFO, WARNING, SEVERE, NONE)")
+	public static String level = "WARNING";
 
 	@ConfigProp (info = "Skins URL access")
 	public static String rootSkinURL = "http://www.myserver.fr/skin_path/";
@@ -74,7 +77,6 @@ public class ModCustomSteveServer extends DummyModContainer {
 
 	@Subscribe
 	public void modConstruction(FMLConstructionEvent evt){
-
 	}
 
 	@Subscribe
@@ -84,11 +86,12 @@ public class ModCustomSteveServer extends DummyModContainer {
 
 	@Subscribe
 	public void preInit(FMLPreInitializationEvent evt) {
-		// Creation du logger
-		log = evt.getModLog();
 		
 		ConfigLoader configLoader = new ConfigLoader(this.getClass(), evt);
 		configLoader.loadConfig();
+		
+		// Creation du logger
+		log = new Logger(evt, level);
 	}
 
 	@Subscribe

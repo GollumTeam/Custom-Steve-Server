@@ -34,7 +34,6 @@ public abstract class AbstractClientPlayer extends EntityPlayer
 
     protected void setupCustomSkin()
     {
-        System.out.println("Setting up custom skins");
 
         if (this.username != null && !this.username.isEmpty())
         {
@@ -122,7 +121,7 @@ public abstract class AbstractClientPlayer extends EntityPlayer
     	
     	try {
     		
-    		String customURL = String.format(ModCustomSteveServer.rootSkinURL+"%s.png", new Object[] {StringUtils.stripControlCodes(par0Str)});
+    		String customURL = String.format(ModCustomSteveServer.rootCapeURL+"%s.png", new Object[] {StringUtils.stripControlCodes(par0Str)});
     		ModCustomSteveServer.log.info ("Test custom cape : "+customURL);
     		
     		URL url = new URL(customURL);
